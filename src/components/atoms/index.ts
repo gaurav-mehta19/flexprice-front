@@ -1,4 +1,5 @@
 export { Button, AddButton } from './Button';
+export { Badge } from './Badge';
 export { default as Input } from './Input';
 export { default as SectionHeader } from './SectionHeader';
 export { default as Chip } from './Chip';

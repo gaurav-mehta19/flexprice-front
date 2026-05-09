@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import { Tooltip as TooltipRoot, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-interface TooltipProps {
+export interface TooltipProps {
 	/** The element that triggers the tooltip */
 	children: ReactNode;
 	/** The content to display in the tooltip */
@@ -19,7 +19,14 @@ interface TooltipProps {
 	className?: string;
 }
 
-const Tooltip: React.FC<TooltipProps> = ({
+/**
+ * Tooltip
+ * @description Floating informational label that appears on hover.
+ * @param content - Text or element to show inside the tooltip
+ * @param side - Preferred position: 'top' | 'bottom' | 'left' | 'right'
+ * @param delayDuration - Milliseconds before tooltip appears (default: 400)
+ */
+export const Tooltip: React.FC<TooltipProps> = ({
 	children,
 	content,
 	delayDuration,

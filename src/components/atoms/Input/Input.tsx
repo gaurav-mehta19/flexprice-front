@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { useComposedRefs } from '@/lib/composition';
 import Label from '../Label';
 import { sizes, SizeVariant } from '@/lib/sizing';
 
@@ -69,14 +70,16 @@ const getInputPattern = (variant: InputVariant, options: NumberFormatOptions = D
 	}
 };
 
-interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size' | 'prefix'> {
 	label?: string;
 	description?: React.ReactNode;
 	error?: string;
+	helperText?: string;
 	type?: React.HTMLInputTypeAttribute;
 	onChange?: (value: string) => void;
 	disabled?: boolean;
 	suffix?: React.ReactNode;
+	prefix?: React.ReactNode;
 	className?: string;
 	placeholder?: string;
 	id?: string;
@@ -87,7 +90,16 @@ interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, '
 	size?: SizeVariant;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+/**
+ * Input
+ * @description Form input with label, helper text, error state, and prefix/suffix support.
+ * @param label - Field label rendered above the input
+ * @param error - Error message string; turns border red
+ * @param helperText - Hint text below the input
+ * @param prefix - Content rendered inside input on the left (e.g. "$")
+ * @param suffix - Content rendered inside input on the right
+ */
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 	(
 		{
 			className,
@@ -95,10 +107,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 			label,
 			description,
 			error,
+			helperText,
 			onChange,
 			disabled,
 			placeholder,
 			suffix,
+			prefix,
 			id,
 			value,
 			inputPrefix,
@@ -111,6 +125,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 		ref,
 	) => {
 		const inputRef = React.useRef<HTMLInputElement | null>(null);
+		const composedRef = useComposedRefs(ref as React.Ref<HTMLInputElement>, (element: HTMLInputElement | null) => {
+			inputRef.current = element;
+		});
 		const [cursorPosition, setCursorPosition] = React.useState<number | null>(null);
 
 		const isFormattedVariant = variant === 'formatted-number' || variant === 'integer';
@@ -181,7 +198,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 						'focus-within:border-black',
 						className,
 					)}>
-					{inputPrefix && <div className='mr-2'>{inputPrefix}</div>}
+					{(prefix || inputPrefix) && <div className='mr-2'>{prefix ?? inputPrefix}</div>}
 					<input
 						{...props}
 						id={id}
@@ -195,14 +212,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 							className,
 						)}
 						onChange={handleChange}
-						ref={(element) => {
-							inputRef.current = element;
-							if (typeof ref === 'function') {
-								ref(element);
-							} else if (ref) {
-								ref.current = element;
-							}
-						}}
+						ref={composedRef}
 					/>
 					{suffix && (
 						<div className='ml-2 flex shrink-0 items-center self-stretch pl-2 text-sm tabular-nums leading-none text-muted-foreground'>
@@ -211,7 +221,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 					)}
 				</div>
 				{/* Description */}
-				{description && <p className={cn('text-sm', disabled ? 'text-zinc-500' : 'text-muted-foreground')}>{description}</p>}
+				{(helperText || description) && (
+					<p className={cn('text-sm', disabled ? 'text-zinc-500' : 'text-muted-foreground')}>{helperText ?? description}</p>
+				)}
 				{/* Error Message */}
 				{error && <p className='text-sm text-destructive'>{error}</p>}
 			</div>

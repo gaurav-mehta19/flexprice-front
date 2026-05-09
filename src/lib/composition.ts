@@ -75,8 +75,22 @@ function composeRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
  * Accepts callback refs and RefObject(s).
  */
 function useComposedRefs<T>(...refs: PossibleRef<T>[]): React.RefCallback<T> {
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	return React.useCallback(composeRefs(...refs), refs);
+	// Keep a stable callback identity while always forwarding to the latest refs.
+	// Update synchronously during render (not in useEffect) so refsRef.current is
+	// current by the time React assigns refs during the commit phase.
+	const refsRef = React.useRef<PossibleRef<T>[]>(refs);
+	refsRef.current = refs;
+
+	return React.useCallback((node: T | null) => {
+		for (let i = 0; i < refsRef.current.length; i++) {
+			try {
+				// use any cast to allow null clearing as in composeRefs cleanup
+				setRef(refsRef.current[i] as PossibleRef<any>, node as any);
+			} catch (e) {
+				// swallow individual ref errors to avoid breaking other refs
+			}
+		}
+	}, []);
 }
 
 export { composeEventHandlers, composeRefs, useComposedRefs };

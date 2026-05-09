@@ -13,7 +13,7 @@ export interface SelectOption {
 	disabled?: boolean;
 }
 
-interface Props {
+export interface SelectProps {
 	options: SelectOption[];
 	value?: string;
 	defaultOpen?: boolean;
@@ -30,6 +30,7 @@ interface Props {
 	hideSelectedTick?: boolean;
 	trigger?: React.ReactNode;
 	contentClassName?: string;
+	searchable?: boolean;
 }
 
 const RadioSelectItem = React.forwardRef<
@@ -56,7 +57,18 @@ const RadioSelectItem = React.forwardRef<
 	</SelectPrimitive.Item>
 ));
 
-const FlexPriceSelect: React.FC<Props> = ({
+/**
+ * Select
+ * @description Dropdown selector with optional search/filter capability.
+ * @param options - Array of { value: string; label: string }
+ * @param value - Controlled value
+ * @param onChange - Change handler
+ * @param placeholder - Placeholder text
+ * @param searchable - Enables filtering options by typing
+ * @param disabled - Disables the select
+ * @param error - Error message
+ */
+export const FlexPriceSelect: React.FC<SelectProps> = ({
 	disabled = false,
 	options,
 	value,
@@ -73,7 +85,11 @@ const FlexPriceSelect: React.FC<Props> = ({
 	hideSelectedTick = true,
 	trigger,
 	contentClassName,
+	searchable = false,
 }) => {
+	const [search, setSearch] = React.useState('');
+	const visibleOptions = searchable ? options.filter((option) => option.label.toLowerCase().includes(search.toLowerCase())) : options;
+
 	return (
 		<div className={cn('space-y-1 ', className)}>
 			{/* Label */}
@@ -104,9 +120,19 @@ const FlexPriceSelect: React.FC<Props> = ({
 					)}
 				</SelectTrigger>
 				<SelectContent className={cn('w-[var(--radix-select-trigger-width)]', contentClassName)}>
+					{searchable && (
+						<div className='p-2'>
+							<input
+								className='h-8 w-full rounded-md border border-input bg-background px-2 text-sm outline-none focus:ring-1 focus:ring-ring'
+								placeholder='Search...'
+								value={search}
+								onChange={(event) => setSearch(event.target.value)}
+							/>
+						</div>
+					)}
 					<SelectGroup>
-						{options.length > 0 &&
-							options.map((option) => {
+						{visibleOptions.length > 0 &&
+							visibleOptions.map((option) => {
 								if (isRadio) {
 									return (
 										<RadioSelectItem
@@ -157,7 +183,7 @@ const FlexPriceSelect: React.FC<Props> = ({
 									);
 								}
 							})}
-						{options.length === 0 && noOptionsText && (
+						{visibleOptions.length === 0 && noOptionsText && (
 							<ShadcnSelect value='no-items' disabled>
 								<div className='flex items-center space-x-2 w-full'>
 									<div className='flex flex-col mr-2 w-full'>

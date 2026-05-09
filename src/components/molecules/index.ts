@@ -183,3 +183,8 @@ export { default as ApiDocs, ApiDocsContent } from './ApiDocs';
 
 // Debug & Development
 export { default as DebugMenu } from './DebugMenu';
+export { DataTable } from './DataTable';
+export { InvoiceStatusBadge } from './InvoiceStatusBadge';
+export { UsageBar } from './UsageBar';
+export { DateRangePicker } from './DateRangePicker';
+export { SearchBar } from './SearchBar';

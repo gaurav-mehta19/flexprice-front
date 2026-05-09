@@ -398,7 +398,7 @@ const SortableItemHandle = React.forwardRef<HTMLButtonElement, SortableItemHandl
 	const isDisabled = disabled ?? itemContext.disabled;
 
 	const composedRef = useComposedRefs(forwardedRef, (node) => {
-		if (!isDisabled) return;
+		if (isDisabled) return;
 		itemContext.setActivatorNodeRef(node);
 	});
 
