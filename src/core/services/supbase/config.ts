@@ -24,6 +24,7 @@ const createMockClient = () => {
 const supabaseUrl = isSelfHosted ? '' : import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = isSelfHosted ? '' : import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-const supabase = isSelfHosted ? (createMockClient() as any) : createClient(supabaseUrl, supabaseKey);
+// Use mock client if URLs are empty (happens in Storybook or when env vars not set)
+const supabase = isSelfHosted || !supabaseUrl || !supabaseKey ? (createMockClient() as any) : createClient(supabaseUrl, supabaseKey);
 
 export default supabase;
