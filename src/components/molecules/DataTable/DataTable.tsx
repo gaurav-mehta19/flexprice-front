@@ -79,7 +79,7 @@ export const DataTable = <T extends Record<string, unknown>>({
 				{columns.map((column) => (
 					<th
 						key={column.key}
-						className='border-b px-4 py-3 text-left text-xs font-semibold uppercase tracking-normal text-gray-500'
+						className='sticky top-0 z-20 border-b bg-gray-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-normal text-gray-500'
 						style={{ width: column.width }}>
 						<button
 							type='button'
@@ -160,23 +160,25 @@ export const DataTable = <T extends Record<string, unknown>>({
 					</div>
 				</div>
 			) : (
-				<table className='w-full table-fixed'>
-					{renderHeader()}
-					<tbody>
-						{data.map((row, rowIndex) => (
-							<tr
-								key={String(row.id ?? rowIndex)}
-								className={cn('hover:bg-gray-50', onRowClick && 'cursor-pointer')}
-								onClick={() => onRowClick?.(row)}>
-								{columns.map((column) => (
-									<td key={column.key} className='border-b px-4 py-3 text-sm text-gray-700'>
-										{renderCell(row, column)}
-									</td>
-								))}
-							</tr>
-						))}
-					</tbody>
-				</table>
+				<div className='max-h-[600px] overflow-auto'>
+					<table className='w-full table-fixed'>
+						{renderHeader()}
+						<tbody>
+							{data.map((row, rowIndex) => (
+								<tr
+									key={String(row.id ?? rowIndex)}
+									className={cn('hover:bg-gray-50', onRowClick && 'cursor-pointer')}
+									onClick={() => onRowClick?.(row)}>
+									{columns.map((column) => (
+										<td key={column.key} className='border-b px-4 py-3 text-sm text-gray-700'>
+											{renderCell(row, column)}
+										</td>
+									))}
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
 			)}
 			{pagination && (
 				<div className='flex items-center justify-between border-t px-4 py-3 text-sm text-gray-600'>

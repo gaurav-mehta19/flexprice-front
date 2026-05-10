@@ -17,7 +17,15 @@ const meta: Meta<typeof Select> = {
 	title: 'Atoms/Select',
 	component: Select,
 	tags: ['autodocs'],
-	parameters: { container: 'fixed' },
+	parameters: {
+		container: 'fixed',
+		docs: {
+			description: {
+				story:
+					'Default shows the common plan selector. Variants cover searchable, disabled, error, and dense option lists. Controls keep the current value editable in Storybook.',
+			},
+		},
+	},
 	argTypes: {
 		options: { control: 'object' },
 		value: { control: 'text' },
@@ -46,8 +54,27 @@ export const Default: Story = {
 	render: (args) => <ControlledSelect {...args} />,
 };
 
+export const Controls: Story = {
+	args: {
+		label: 'Plan',
+		value: 'growth',
+	},
+	render: (args) => <ControlledSelect {...args} />,
+};
+
 export const WithSearch: Story = {
 	render: (args) => <ControlledSelect {...args} searchable />,
+};
+
+export const Variants: Story = {
+	render: () => (
+		<div className='space-y-4'>
+			<Select options={options} placeholder='Select a plan' value='starter' />
+			<Select options={options} placeholder='Searchable plan' searchable value='growth' />
+			<Select options={options} placeholder='Disabled plan' disabled value='enterprise' />
+			<Select options={options} placeholder='With error' error='Please select a plan' value='' />
+		</div>
+	),
 };
 
 export const Disabled: Story = {
